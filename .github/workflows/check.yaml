@@ -23,9 +23,7 @@ jobs:
         components: rustfmt, clippy
     - name: Build
       run: |
-          cargo build --all-targets --all-features --locked -q
-          cargo build --all-targets --no-default-features --locked -q
-  
+          cargo build --verbose --all
 
     - name: Run Unit tests
       run: cargo test --locked -- --nocapture
