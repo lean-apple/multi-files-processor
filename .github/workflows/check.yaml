@@ -1,0 +1,37 @@
+name: rust checks 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        
+    - uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+    - name: Build
+      run: |
+          cargo build --all-targets --all-features --locked -q
+          cargo build --all-targets --no-default-features --locked -q
+  
+
+    - name: Run Unit tests
+      run: cargo test --locked -- --nocapture
+      
+    - name: Check clippy for all features
+      run: cargo clippy --all-targets --all-features  -- -D warnings
+    
+    - name: Format
+      run: cargo fmt --check
