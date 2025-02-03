@@ -74,9 +74,21 @@ fn format_json(
                 .to_string_lossy()
                 .to_string();
 
-            let file_result = FileResult {
-                line_counts: result.line_counts.clone(),
-                total_words: verbose.then_some(result.total_words),
+            debug!(
+                "Processing file {} with total_words={}",
+                name, result.total_words
+            );
+
+            let file_result = if verbose {
+                FileResult {
+                    line_counts: result.line_counts.clone(),
+                    total_words: Some(result.total_words),
+                }
+            } else {
+                FileResult {
+                    line_counts: result.line_counts.clone(),
+                    total_words: None,
+                }
             };
 
             (name, file_result)
