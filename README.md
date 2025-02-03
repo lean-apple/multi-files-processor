@@ -10,14 +10,14 @@ Concurrent word counter for multiple text files, providing both a library and CL
 
 ### Installation
 
-Inside this repository
+- Inside this repository
 ```bash
 cargo install mfp-cli
 ```
-### or to use in a dev mode
+- or to use in a dev mode
 
 ```bash 
-cargo run --bin mfp-cli
+cargo run --bin mfp-cli [OPTIONS] [FILES]
 ```
 
 ### Options
