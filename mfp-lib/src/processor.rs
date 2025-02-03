@@ -34,20 +34,22 @@ impl TextProcessor {
 
         let tasks: Vec<_> = file_paths
             .into_iter()
-            .map(|path| self.process_single_file(path))
+            .map(|path| async {
+                let result = self.process_single_file(path.clone()).await;
+                (path, result)
+            })
             .collect();
 
         let results = future::join_all(tasks).await;
         let total_count = results.len();
         let mut failed_count = 0;
 
-        // Handle results and populate the results HashMap
-        for result in results {
+        // Handle results and populate the results
+        for (path, result) in results {
             match result {
                 Ok(file_result) => {
-                    info!("Successfully processed file: {:?}", file_result.file_path);
-                    self.results
-                        .insert(file_result.file_path.clone(), file_result);
+                    info!("Successfully processed file: {:?}", path);
+                    self.results.insert(path, file_result);
                 }
                 Err(e) => {
                     failed_count += 1;
@@ -95,7 +97,6 @@ impl TextProcessor {
         }
 
         Ok(FileProcessingResult {
-            file_path,
             line_counts,
             total_words,
         })
