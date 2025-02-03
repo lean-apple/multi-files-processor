@@ -13,6 +13,7 @@ pub enum OutputFormat {
     Json,
 }
 
+/// Outputs the processing results in the specified format
 pub fn format_output(
     results: &HashMap<PathBuf, FileProcessingResult>,
     format: OutputFormat,
@@ -36,6 +37,8 @@ struct OutputResult {
     files: HashMap<String, FileResult>,
 }
 
+// Helper to format results as text,
+// optionally including total word counts
 fn format_text(
     results: &HashMap<PathBuf, FileProcessingResult>,
     verbose: bool,
@@ -49,7 +52,7 @@ fn format_text(
 
         if verbose {
             println!(
-                "{}: {} words total\n  Line counts: {:?}",
+                "{}: {} words in total\n  Line counts: {:?}",
                 filename, result.total_words, result.line_counts
             );
         } else {
@@ -60,6 +63,8 @@ fn format_text(
     Ok(())
 }
 
+// Helper to formats results as JSON,
+// optionally including total word counts
 fn format_json(
     results: &HashMap<PathBuf, FileProcessingResult>,
     verbose: bool,
