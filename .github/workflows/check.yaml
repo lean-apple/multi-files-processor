@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,19 +12,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 1
         
-    - uses: dtolnay/rust-toolchain@master
+    - uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: stable
         components: rustfmt, clippy
-    - name: Build
-      run: |
-          cargo build --verbose --all
 
-    - name: Run Unit tests
+    - uses: Swatinem/rust-cache@v2
+
+    - name: Build
+      run: cargo build --verbose --all --locked
+
+    - name: Run unit tests
       run: cargo test --locked -- --nocapture
       
     - name: Check clippy for all features
