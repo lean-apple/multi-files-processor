@@ -1,0 +1,8 @@
+ 
+    First line with leading spaces
+Multiple
+
+
+Empty lines
+    Indented line
+Last line

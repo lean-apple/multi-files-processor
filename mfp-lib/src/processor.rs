@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use tokio::fs::File;
 use tokio::io::{AsyncBufReadExt, BufReader};
-use tracing::error;
+use tracing::{error, info};
 
 #[derive(Debug, Default)]
 pub struct TextProcessor {
@@ -30,6 +30,8 @@ impl TextProcessor {
             return Err(TextProcessorError::EmptyFileList);
         }
 
+        info!("Starting to process {} files", file_paths.len());
+
         let tasks: Vec<_> = file_paths
             .into_iter()
             .map(|path| self.process_single_file(path))
@@ -43,6 +45,7 @@ impl TextProcessor {
         for result in results {
             match result {
                 Ok(file_result) => {
+                    info!("Successfully processed file: {:?}", file_result.file_path);
                     self.results
                         .insert(file_result.file_path.clone(), file_result);
                 }
@@ -54,12 +57,16 @@ impl TextProcessor {
         }
 
         if failed_count > 0 {
+            error!(
+                "Failed to process {} out of {} files",
+                failed_count, total_count
+            );
             return Err(TextProcessorError::PartialProcessingFailure {
                 failed_count,
                 total_count,
             });
         }
-
+        info!("Successfully processed all {} files", total_count);
         Ok(())
     }
 
