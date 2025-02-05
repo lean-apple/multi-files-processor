@@ -6,7 +6,7 @@ Concurrent word counter for multiple text files, providing both a library and CL
 
 - [Rust](https://www.rust-lang.org/fr/tools/install)
 
-## CLI Usage
+## CLI use
 
 ### Installation
 
@@ -73,7 +73,7 @@ empty.txt: 0 words total
   }
 }
 ```
-## Library Usage
+## Library use
 
 ```rust 
 
