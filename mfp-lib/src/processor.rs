@@ -48,7 +48,6 @@ impl TextProcessor {
         let total_count = results.len();
         let mut failed_count = 0;
 
-        // Handle results and populate the results
         for (path, result) in results {
             match result {
                 Ok(file_result) => {
@@ -79,7 +78,7 @@ impl TextProcessor {
         Ok(())
     }
 
-    /// Processes a single file asynchronously
+    /// Processes a single file
     #[instrument(skip(self), fields(
         path = ?file_path.display(),
         file_size = ?file_path.metadata().map(|m| m.len()).unwrap_or(0)
@@ -115,7 +114,7 @@ impl TextProcessor {
         })
     }
 
-    /// Returns a reference to the processing results
+    /// Returns files results
     pub fn get_results(&self) -> &HashMap<PathBuf, FileProcessingResult> {
         &self.results
     }

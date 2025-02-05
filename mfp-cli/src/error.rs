@@ -4,9 +4,9 @@ use std::fmt;
 /// Errors occuring during CLI operations
 #[derive(Debug)]
 pub enum CliError {
-    /// Errors related to input files or processing
+    /// Input files or processing errors
     InputError(String),
-    /// Errors related to output formatting
+    /// Output formatting errors
     FormatError(String),
 }
 
