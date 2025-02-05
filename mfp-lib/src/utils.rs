@@ -3,8 +3,6 @@ use std::path::Path;
 use tokio::fs;
 
 /// Counts the number of words in a line by splitting on whitespace
-/// TODO: check to replace with `unicode_segmentation crate`
-/// to have a better word counting
 pub fn count_words(line: &str) -> usize {
     line.split_whitespace().count()
 }
