@@ -4,9 +4,10 @@ use crate::utils::{count_words, validate_file_path};
 use futures::future;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::time::Instant;
 use tokio::fs::File;
 use tokio::io::{AsyncBufReadExt, BufReader};
-use tracing::{error, info};
+use tracing::{debug, error, info, instrument, trace};
 
 #[derive(Debug, Default)]
 pub struct TextProcessor {
@@ -22,10 +23,13 @@ impl TextProcessor {
     }
 
     /// Processes multiple files concurrently
+    #[instrument(skip(self, file_paths), fields(count = file_paths.len()))]
     pub async fn process_files(
         &mut self,
         file_paths: Vec<PathBuf>,
     ) -> Result<(), TextProcessorError> {
+        let start = Instant::now();
+
         if file_paths.is_empty() {
             return Err(TextProcessorError::EmptyFileList);
         }
@@ -68,18 +72,25 @@ impl TextProcessor {
                 total_count,
             });
         }
-        info!("Successfully processed all {} files", total_count);
+        info!(
+            duration_ms = start.elapsed().as_millis(),
+            "Successfully processed all {} files", total_count
+        );
         Ok(())
     }
 
     /// Processes a single file asynchronously
+    #[instrument(skip(self), fields(
+        path = ?file_path.display(),
+        file_size = ?file_path.metadata().map(|m| m.len()).unwrap_or(0)
+    ))]
     async fn process_single_file(
         &self,
         file_path: PathBuf,
     ) -> Result<FileProcessingResult, TextProcessorError> {
-        if (validate_file_path(&file_path).await).is_err() {
-            return Err(TextProcessorError::FileNotFound(file_path));
-        }
+        validate_file_path(&file_path)
+            .await
+            .map_err(|_| TextProcessorError::FileNotFound(file_path.clone()))?;
 
         let file = File::open(&file_path)
             .await
@@ -90,8 +101,10 @@ impl TextProcessor {
         let mut line_counts = Vec::new();
         let mut total_words = 0;
 
+        debug!("Starting file processing");
         while let Some(line) = lines.next_line().await? {
             let word_count = count_words(&line);
+            trace!(line_number = line_counts.len(), words = word_count);
             total_words += word_count;
             line_counts.push(word_count);
         }
