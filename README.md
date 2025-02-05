@@ -12,7 +12,7 @@ Concurrent word counter for multiple text files, providing both a library and CL
 
 - Inside this repository
 ```bash
-cargo install mfp-cli
+cargo install --path mfp-cli
 ```
 - or to use in a dev mode
 
